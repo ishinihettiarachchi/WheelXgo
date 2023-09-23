@@ -16,9 +16,16 @@
 <h1>Welcome to WheelXgo</h1>
 <div class="content">
 <div class="inner-div">
-	<button>Login</button>
+	<button class="btn">
+	<span class="btn-text">Login</span>
+	<div class="fill-container"></div>
+	</button>
+	
 	<p>Don't have an Account</p>
-	<button>Sign Up</button>
+	<button class="btn">
+	<span class="btn-text">Sign Up</span>
+	<div class="fill-container"></div>
+	</button>
 </div>
 </div>
 </div>
