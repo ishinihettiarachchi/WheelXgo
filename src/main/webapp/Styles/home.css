@@ -5,11 +5,20 @@
     
 }
 
+.wrapper-menu{
+	background-color:#4c4e53;
+	height:100vh;
+	width:6%;
+	position: fixed;
+z-index: 999;
+}
+
 .menu-list {
     position: fixed;
     top: 20%; 
     left: 0; 
     transform: translateY(-50%); 
+    z-index: 999;
 }
 
 ul.menu {
@@ -65,123 +74,16 @@ li.menu_list:hover .front {
 }
 
 .main-container img{
-	width:25%;
+	width:20%;
 	
 }
 
-#text{
-	padding:10%;
+.sec{
+	height:100vh;
 }
 
-.register {
-    background-image:url("https://th.bing.com/th/id/R.436896e51cc35920e8c4664bee7189b4?rik=ynrHeGvdrFupNA&riu=http%3a%2f%2fallstarmotorsok.com%2fwp-content%2fuploads%2f2021%2f06%2ftips-and-tricks-for-making-long-car-journeys-less-boring-2021-1.jpg&ehk=jMkjO4C3ZS51u%2bImwYP26Xmef0kfb8cMT6ni6987tcs%3d&risl=&pid=ImgRaw&r=0");
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 100%;
-    height: 100vh;
-    margin-top: 3%;
-    padding: 3%;
-}
-
-
-
-.register-container {
-    background: #f8f9fa;
-    border-top-left-radius: 10% 50%;
-    border-bottom-left-radius: 10% 50%;
-    margin-left:20%;
-}
-
-
-
-@-webkit-keyframes mover {
-    0% {
-        transform: translateY(0);
-    }
-
-    100% {
-        transform: translateY(-20px);
-    }
-}
-
-@keyframes mover {
-    0% {
-        transform: translateY(0);
-    }
-
-    100% {
-        transform: translateY(-20px);
-    }
-}
-
-#service{
-	
-}
-
-.register-left p {
-    font-weight: lighter;
-    padding: 12%;
-    margin-top: -9%;
-}
-
-.register .register-form {
-    padding: 10%;
-    margin-top: 10%;
-}
-
-.btnRegister {
-    float: right;
-    margin-top: 10%;
-    border: none;
-    border-radius: 1.5rem;
-    padding: 2%;
-    background: #0062cc;
-    color: #fff;
-    font-weight: 600;
-    width: 50%;
-    cursor: pointer;
-}
-
-.register .nav-tabs {
-    margin-top: 3%;
-    border: none;
-    background: #0062cc;
-    border-radius: 1.5rem;
-    width: 28%;
-    float: right;
-}
-
-.register .nav-tabs .nav-link {
-    padding: 2%;
-    height: 34px;
-    font-weight: 600;
-    color: #fff;
-    border-top-right-radius: 1.5rem;
-    border-bottom-right-radius: 1.5rem;
-}
-
-.register .nav-tabs .nav-link:hover {
-    border: none;
-}
-
-.register .nav-tabs .nav-link.active {
-    width: 100px;
-    color: #0062cc;
-    border: 2px solid #0062cc;
-    border-top-left-radius: 1.5rem;
-    border-bottom-left-radius: 1.5rem;
-}
-
-.register-heading {
-    text-align: center;
-    margin-top: 8%;
-    margin-bottom: -15%;
-    color: #495057;
-}
 
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
-
-
 
 
 
@@ -243,7 +145,6 @@ footer {
     color: #fff;
     font-size: 14px;
     bottom: 0;
-    position: fixed;
     left: 0;
     right: 0;
     text-align: center;
@@ -285,58 +186,3 @@ h2 small {
   font-size: 0.5em;
 }
 
-.table{
-	margin:10%;
-}
-
-.responsive-table li {
-  border-radius: 3px;
-  padding: 25px 20px;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 25px;
-}
-.responsive-table .table-header {
-  background-color: #95a5a6;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.responsive-table .table-row {
-  background-color: #ffffff;
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
-}
-.responsive-table .col-1 {
-  flex-basis: 10%;
-}
-.responsive-table .col-2 {
-  flex-basis: 40%;
-}
-.responsive-table .col-3 {
-  flex-basis: 25%;
-}
-.responsive-table .col-4 {
-  flex-basis: 25%;
-}
-@media all and (max-width: 767px) {
-  .responsive-table .table-header {
-    display: none;
-  }
-  .responsive-table li {
-    display: block;
-  }
-  .responsive-table .col {
-    flex-basis: 100%;
-  }
-  .responsive-table .col {
-    display: flex;
-    padding: 10px 0;
-  }
-  .responsive-table .col:before {
-    color: #6c7a89;
-    padding-right: 10px;
-    content: attr(data-label);
-    flex-basis: 50%;
-    text-align: right;
-  }
-}
