@@ -1,6 +1,10 @@
 body{
 	
 	background-image:url("https://wallpaperaccess.com/full/1094659.jpg");
+	background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 100vh;
 }
 .logo img{
 	width:20%;
