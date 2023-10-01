@@ -7,47 +7,9 @@
 <%@ page import="java.io.IOException" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="java.sql.*, java.util.Date" %>
-<%
-// Database connection variables
-String jdbcUrl = "jdbc:mysql://51.132.137.223:3306/isec_assessment2";
-String dbUsername = "isec";
-String dbPassword = "EUHHaYAmtzbv";
-Connection conn = null;
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 
-// SQL query to retrieve data from the vehicle_service table
-String sqlQuery = "SELECT * FROM vehicle_service WHERE username= ?";
-
-
-boolean isConnected = false; // Initialize a flag to check the connection status
-
-try {
-    // Register the JDBC driver (This is optional in modern JDBC drivers)
-		Class.forName("com.mysql.cj.jdbc.Driver");
-
-    // Create a database connection
-    conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
-
-    // Check if the connection is successful
-    if (conn != null) {
-        isConnected = true;
-    }
-
-} catch (SQLException e) {
-    e.printStackTrace();
-    // Handle any database connection errors here
-} finally {
-    try {
-        if (conn != null) {
-            conn.close(); // Close the database connection when done
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-}
-
-	
-
-%>    
     
     
 <%
@@ -61,7 +23,7 @@ try {
 
         // Check if the tokens exist in the session
          if (access_token != null && id_token != null) {
-        	    String apiUrl = "https://api.asgardeo.io/t/learnmasith/oauth2/userinfo";
+        	    String apiUrl = "https://api.asgardeo.io/t/projectwheelxgo/oauth2/userinfo";
 
         try {
             // Create a URL object
@@ -132,7 +94,11 @@ try {
         }
     } else {
         // Handle the case when either accessToken or idToken is null
-    	out.println("Access token or ID token is missing.");
+        %>
+    	<script>
+			alert("Access token is missing");
+		</script>
+		<% 
     }
     %>
     
@@ -270,48 +236,139 @@ try {
 <section class="sec" id="list">
 	<div class="container">
   <h2>Your Reservations <small></small></h2>
+
   <ul class="responsive-table">
     <li class="table-header">
-      <div class="col col-1">Job Id</div>
-      <div class="col col-2">Customer Name</div>
-      <div class="col col-3">Amount Due</div>
+      <div class="col col-1">Booking ID</div>
+      <div class="col col-2">Date</div>
+      <div class="col col-2">Time</div>
+      <div class="col col-2">Location</div>
+      <div class="col col-3">Vehicle No</div>
+      <div class="col col-3">Mileage</div>
+      
      
     </li>
-    <li class="table-row">
-      <div class="col col-1" data-label="Job Id">42235</div>
-      <div class="col col-2" data-label="Customer Name">John Doe</div>
-      <div class="col col-3" data-label="Amount">$350</div>
+    <%
+		// Database connection variables
+		String jdbcUrl = "jdbc:mysql://51.132.137.223:3306/isec_assessment2";
+		String dbUsername = "isec";
+		String dbPassword = "EUHHaYAmtzbv";
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		// SQL query to retrieve data from the vehicle_service table
+
+
+	try {
+    Class.forName("com.mysql.cj.jdbc.Driver");
+    conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
+    
+    if (conn != null) {
+        String sqlQuery = "SELECT * FROM vehicle_service WHERE username=?";
+        stmt = conn.prepareStatement(sqlQuery);
+        stmt.setString(1,"ishinihettiarachchiuv@gmail.com"); // Replace with the actual username you want to query
+        
+        rs = stmt.executeQuery();
+        
+        while (rs.next()) {
+            int bookingId = rs.getInt("booking_id");
+            Date date = rs.getDate("date");
+            Time time = rs.getTime("time");
+            String location = rs.getString("location");
+            String vehicleNo = rs.getString("vehicle_no");
+            int mileage = rs.getInt("mileage");
+            String message = rs.getString("message");
+          %>
+          <li class="table-row">
+      		<div class="col col-1" data-label="BookinID"><%= bookingId %></div>
+      		<div class="col col-2" data-label="Date"><%= date %></div>
+      		<div class="col col-3" data-label="Iime"><%= time %></div>
+      		<div class="col col-3" data-label="Location"><%= location  %></div>
+            <div class="col col-3" data-label="Vehicle_no"><%= vehicleNo %></div>
+            <div class="col col-3" data-label="Mileage"><%= mileage %></div>
+            <div class="col col-3" data-label="Message"><%= message %></div>
+      
       <div class="col col-3" data-label="Amount"><span class="front fas fa-trash"></span></div>
      
     </li>
-    <li class="table-row">
-      <div class="col col-1" data-label="Job Id">42442</div>
-      <div class="col col-2" data-label="Customer Name">Jennifer Smith</div>
-      <div class="col col-3" data-label="Amount">$220</div>
-      <div class="col col-3" data-label="Amount"><span class="front fas fa-trash"></div>
-      
-    </li>
-    <li class="table-row">
-      <div class="col col-1" data-label="Job Id">42257</div>
-      <div class="col col-2" data-label="Customer Name">John Smith</div>
-      <div class="col col-3" data-label="Amount">$341</div>
-      <div class="col col-3" data-label="Amount"><span class="front fas fa-trash"></div>
-      
-    </li>
-    <li class="table-row">
-      <div class="col col-1" data-label="Job Id">42311</div>
-      <div class="col col-2" data-label="Customer Name">John Carpenter</div>
-      <div class="col col-3" data-label="Amount">$115</div>
-      <div class="col col-3" data-label="Amount"><span class="front fas fa-trash"></div>
-      
-    </li>
+    <% 
+        }
+    }
+	} catch (ClassNotFoundException | SQLException e) {
+	    e.printStackTrace();
+	} finally {
+	    try {
+	        if (rs != null) rs.close();
+	        if (stmt != null) stmt.close();
+	        if (conn != null) conn.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+}
+	
+
+%>    
     
-  </ul>
+    
+    
+ </ul>
 </div>
 </section>
 
 
 <section class="sec" id="service">
+<%
+
+
+if (request.getParameter("submit") != null) {
+  
+    String vehicleNo = request.getParameter("vehicleNo");
+    String mileageString = request.getParameter("mileage");
+    String location = request.getParameter("location");
+    String message = request.getParameter("message");
+    String username = request.getParameter("usernameField");
+
+    int mileage = Integer.parseInt(mileageString);
+    
+    Date currentDate = new Date();
+    Time currentTime = new Time(currentDate.getTime());
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
+
+        if (conn != null) {
+            String sqlQuery = "INSERT INTO vehicle_service (date, time,vehicle_no, mileage, location, message, username) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sqlQuery);
+            stmt.setDate(1, new java.sql.Date(currentDate.getTime())); // Current date
+            stmt.setTime(2, currentTime); // Current time
+            stmt.setString(3, vehicleNo);
+            stmt.setInt(4, mileage);
+            stmt.setString(5, location);
+            stmt.setString(6, message);
+            stmt.setString(7, username); // Replace with the actual username
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                out.println("Data inserted successfully.");
+            } else {
+                // Handle insertion failure
+                out.println("Failed to insert data.");
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+%>
 	<div class="register">
     <div class="row">
      
@@ -324,17 +381,16 @@ try {
                         <div class="col-md-6">
                             
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Date of the service reservation *" value="" />
+                                <input type="text" class="form-control" placeholder="Date of the service reservation *" value="date" name="date"/>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Vehicle Registration Number *" value="" />
+                                <input type="text" class="form-control" placeholder="Vehicle Registration Number *" value="vehicleNo" name="vehicleNo"/>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Current Mileage *" value="" />
+                                <input type="text" class="form-control" placeholder="Current Mileage *" value="mileage" name="mileage"/>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Preferred Location*" value="" />
-                                
+                                <input type="text" class="form-control" placeholder="Preferred Location*" value="location" name="location"/>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -349,9 +405,11 @@ try {
                             </div>
                             
                             <div class="form-group">
-                                <textarea  class="form-control" placeholder="Enter Your Message *" value="" ></textarea>
+                                <textarea  class="form-control" placeholder="Enter Your Message *"  name="message"></textarea>
                             </div>
-                            <button class="btnRegister">ADD</button>
+                            <input type="hidden" id="usernameField" name="usernameField" value="">
+                            
+                            <button class="btnRegister"  value="Submit" id="submit" name="submit">ADD</button>
                         </div>
                     </div>
                 </div>
