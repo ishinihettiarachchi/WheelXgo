@@ -9,12 +9,13 @@
 <%@ page import="java.sql.*, java.util.Date" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+
 
     
     
 <%
         // Retrieve access_token and id_token from session attributes
-        String introUrl = "https://api.asgardeo.io/t/projectwheelxgo/oauth2/introspect";
 
         String access_token = (String) request.getSession().getAttribute("access_token");
         String id_token = (String) request.getSession().getAttribute("id_token");
@@ -58,29 +59,46 @@
                 JSONObject jsonResponse = new JSONObject(responseStringBuilder.toString());
 
                 // Retrieve the desired data
+                               
+
                 String username = jsonResponse.getString("username");
                 String givenName = jsonResponse.getString("given_name");
-                String phone = jsonResponse.optString("phone", "N/A");
-                String email = jsonResponse.getString("email");
+                String phone = jsonResponse.getString("phone_number");
+                String email = jsonResponse.getString("email");                
 
                 // Now you have the username, given_name, phone, and email data
                 // You can use these values as needed
+                
+
                %>
 			 <script>
 			 document.addEventListener("DOMContentLoaded", function() {
-				    var username = '<%= username %>';
-				    var givenName = '<%= givenName %>';
-				    var phone = '<%= phone %>';
-				    var email = '<%= email %>';
+				    var username = '<%= username %> ' ;
+				    var givenName = '<%= givenName %> ';
+				    var phone = '<%= phone %> ';
+				    var email = '<%= email %> ';
+				
 
 				    // Now you can use these JavaScript variables to update your HTML elements
-				    document.getElementById("username").textContent =  username;
-				    document.getElementById("givenName").textContent =  givenName;
+				    document.getElementById("given_Name").textContent =   givenName;
+				    document.getElementById("username").textContent = username;
 				    document.getElementById("phone").textContent =  phone;
 				    document.getElementById("email").textContent =  email;
+				    
+				    document.getElementById('submit').addEventListener('click', function () {
+						 console.log("Button clicked");
+		                 // Set the username as a hidden field value in the form
+		                 document.getElementById('nameField').value = username;
+		                 
+		                 
+		             });
 				});
+			 
+			
 			</script>
           <%       
+         
+
             } else {
                 // Handle error responses here
                 out.println("HTTP Error: " + responseCode);
@@ -235,16 +253,19 @@
 
 <section class="sec" id="list">
 	<div class="container">
-  <h2>Your Reservations <small></small></h2>
+  <h2>Your Reservations </h2>
 
   <ul class="responsive-table">
     <li class="table-header">
       <div class="col col-1">Booking ID</div>
       <div class="col col-2">Date</div>
-      <div class="col col-2">Time</div>
+      <div class="col col-1">Time</div>
       <div class="col col-2">Location</div>
-      <div class="col col-3">Vehicle No</div>
-      <div class="col col-3">Mileage</div>
+      <div class="col col-1">Vehicle No</div>
+      <div class="col col-2">Mileage</div>
+      <div class="col col-2">Message</div>
+      <div class="col col-1">Action</div>
+      
       
      
     </li>
@@ -264,13 +285,16 @@
     conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
     
     if (conn != null) {
-        String sqlQuery = "SELECT * FROM vehicle_service WHERE username=?";
+        String sqlQuery = "SELECT * FROM vehicle_service WHERE username=? AND date > CURDATE()";
         stmt = conn.prepareStatement(sqlQuery);
-        stmt.setString(1,"ishinihettiarachchiuv@gmail.com"); // Replace with the actual username you want to query
+        stmt.setString(1,"hello@gmail.com "); 
         
         rs = stmt.executeQuery();
         
+		System.out.println(rs);
+       
         while (rs.next()) {
+
             int bookingId = rs.getInt("booking_id");
             Date date = rs.getDate("date");
             Time time = rs.getTime("time");
@@ -278,34 +302,32 @@
             String vehicleNo = rs.getString("vehicle_no");
             int mileage = rs.getInt("mileage");
             String message = rs.getString("message");
+            
+            
+    		
+
+            
+                        
           %>
           <li class="table-row">
-      		<div class="col col-1" data-label="BookinID"><%= bookingId %></div>
+      		<div class="col col-1" data-label="BookinID" ><%= bookingId %></div>
       		<div class="col col-2" data-label="Date"><%= date %></div>
-      		<div class="col col-3" data-label="Iime"><%= time %></div>
-      		<div class="col col-3" data-label="Location"><%= location  %></div>
-            <div class="col col-3" data-label="Vehicle_no"><%= vehicleNo %></div>
-            <div class="col col-3" data-label="Mileage"><%= mileage %></div>
-            <div class="col col-3" data-label="Message"><%= message %></div>
-      
-      <div class="col col-3" data-label="Amount"><span class="front fas fa-trash"></span></div>
-     
-    </li>
+      		<div class="col col-1" data-label="Time"><%= time %></div>
+      		<div class="col col-2" data-label="Location"><%= location  %></div>
+            <div class="col col-1" data-label="Vehicle_no"><%= vehicleNo %></div>
+            <div class="col col-2" data-label="Mileage"><%= mileage %></div>
+            <div class="col col-2" data-label="Message"><%= message %></div>  
+            <div class="col col-1" data-label="Message"><span class="front fas fa-trash"></span></div>
+         </li>
     <% 
+   
         }
     }
-	} catch (ClassNotFoundException | SQLException e) {
+	}catch (ClassNotFoundException | SQLException e) {
 	    e.printStackTrace();
-	} finally {
-	    try {
-	        if (rs != null) rs.close();
-	        if (stmt != null) stmt.close();
-	        if (conn != null) conn.close();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-}
+	} 
 	
+
 
 %>    
     
@@ -326,11 +348,28 @@ if (request.getParameter("submit") != null) {
     String mileageString = request.getParameter("mileage");
     String location = request.getParameter("location");
     String message = request.getParameter("message");
-    String username = request.getParameter("usernameField");
-
-    int mileage = Integer.parseInt(mileageString);
+    String username = request.getParameter("nameField");
     
-    Date currentDate = new Date();
+    String dateInput = request.getParameter("date");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    Date userDate = null;
+
+
+    int mileage = 0; // Default value if mileageString is empty or invalid
+    if (mileageString != null && !mileageString.isEmpty()) {
+        try {
+        	userDate = dateFormat.parse(dateInput);
+            mileage = Integer.parseInt(mileageString);
+        } catch (NumberFormatException e) {
+            // Handle the case where mileageString is not a valid integer
+            // You can add error handling code or display an error message here
+            e.printStackTrace();
+        }
+    }
+    
+   // Date currentDate = new Date();
+       java.util.Date currentDate = new java.util.Date(); // Declare and initialize currentDate
+
     Time currentTime = new Time(currentDate.getTime());
 
     try {
@@ -340,7 +379,7 @@ if (request.getParameter("submit") != null) {
         if (conn != null) {
             String sqlQuery = "INSERT INTO vehicle_service (date, time,vehicle_no, mileage, location, message, username) VALUES (?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sqlQuery);
-            stmt.setDate(1, new java.sql.Date(currentDate.getTime())); // Current date
+            stmt.setDate(1, new java.sql.Date(userDate.getTime())); // User-provided date
             stmt.setTime(2, currentTime); // Current time
             stmt.setString(3, vehicleNo);
             stmt.setInt(4, mileage);
@@ -351,69 +390,68 @@ if (request.getParameter("submit") != null) {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                out.println("Data inserted successfully.");
+            
+            	%>
+            	<script>
+        			alert("added");
+        		</script>
+        		<% 
+
             } else {
-                // Handle insertion failure
-                out.println("Failed to insert data.");
+            	%>
+            	<script>
+        			alert("failed");
+        		</script>
+        		<% 
             }
         }
+        conn.close();
+        stmt.close();
+        
     } catch (Exception e) {
         e.printStackTrace();
-    } finally {
-        try {
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    } 
 }
 %>
 	<div class="register">
     <div class="row">
      
         <div class="col-md-9 register-container">
-            
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     <h3 class="register-heading">Make Your Reservation Here</h3>
+                    <form action="" method="POST">
                     <div class="row register-form">
                         <div class="col-md-6">
-                            
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Date of the service reservation *" value="date" name="date"/>
+                                <input type="date" class="form-control" placeholder="Date of the service reservation *"  name="date"/>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Vehicle Registration Number *" value="vehicleNo" name="vehicleNo"/>
+                                <input type="text" class="form-control" placeholder="Vehicle Registration Number *"  name="vehicleNo"/>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Current Mileage *" value="mileage" name="mileage"/>
+                                <input type="number" class="form-control" placeholder="Current Mileage *"  name="mileage"/>
                             </div>
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Preferred Location*" value="location" name="location"/>
+                                <input type="text" class="form-control" placeholder="Preferred Location*"  name="location"/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             
                             <div class="form-group">
-                                <select class="form-control">
-                                    <option class="hidden" selected disabled>Please select your Time</option>
-                                    <option>10 AM</option>
-                                    <option>11 AM</option>
-                                    <option>12 PM</option>
-                                </select>
+                               <input type="time" class="form-control" placeholder="Preferred Location*"  name="location"/>
                             </div>
                             
                             <div class="form-group">
                                 <textarea  class="form-control" placeholder="Enter Your Message *"  name="message"></textarea>
                             </div>
-                            <input type="hidden" id="usernameField" name="usernameField" value="">
+                            <input type="hidden" id="nameField" name="nameField" value="">
                             
-                            <button class="btnRegister"  value="Submit" id="submit" name="submit">ADD</button>
+                            <button class="btnRegister"  id="submit" name="submit">ADD</button>
                         </div>
                     </div>
+                    </form>
                 </div>
-             
             </div>
         </div>
     
@@ -427,9 +465,9 @@ if (request.getParameter("submit") != null) {
 	<div class="card-container">
 	
 	<img class="round" src="https://randomuser.me/api/portraits/women/79.jpg" alt="user" />
-	<h3>@<span id="givenName"></span></h3>
-	<h6><span id="username"></h6>
-	<p> <span id = 'email'><br/> <span id = 'phone'> <br/>Sri Lanka</p>
+	<h3>@<span id="given_Name"></span></h3>
+	<h6><span id="username"></span></h6>
+	<p> <span id = "email"></span><br/> <span id = "phone"></span> <br/><span id = "country"></span></p>
 	
 	
 </div>
