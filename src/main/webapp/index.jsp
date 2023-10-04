@@ -21,7 +21,7 @@
 <div class="content">
 <div class="inner-div">
 
-	<button class="btn" onclick="window.location.href='https://api.asgardeo.io/t/projectwheelxgo/oauth2/authorize?response_type=code&client_id=Sgw02f5sSRq273fxmMfySrPILAQa&scope=openid%20email%20phone%20profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2FVehicleServiceSystem%2Fauth.jsp'" class="form-control btn btn-primary submit px-3">
+	<button class="btn" onclick="window.location.href='https://api.asgardeo.io/t/projectwheelxgo/oauth2/authorize?response_type=code&client_id=Sgw02f5sSRq273fxmMfySrPILAQa&scope=openid%20address%20email%20phone%20profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2FVehicleServiceSystem%2Fauth.jsp'" class="form-control btn btn-primary submit px-3">
 	<span class="btn-text">Login</span>
 	<div class="fill-container"></div>
 	</button>
