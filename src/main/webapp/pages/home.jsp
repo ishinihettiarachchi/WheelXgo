@@ -11,7 +11,110 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 
+<%
+//database connection
+		String jdbcUrl = "jdbc:mysql://51.132.137.223:3306/isec_assessment2";
+		String dbUsername = "isec";
+		String dbPassword = "EUHHaYAmtzbv";
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 
+		try{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		    conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
+		    
+		    String sqlQuery = "SELECT * FROM vehicle_service WHERE username=?";
+	        stmt = conn.prepareStatement(sqlQuery);
+	        stmt.setString(1,"hello@gmail.com "); 
+	        
+	        rs = stmt.executeQuery();
+	        
+	        if (request.getParameter("submit") != null ) {
+	        	  
+	            String vehicleNo = request.getParameter("vehicleNo");
+	            String mileageString = request.getParameter("mileage");
+	            String location = request.getParameter("location");
+	            String message = request.getParameter("message");
+	            String username = request.getParameter("nameField");
+	            String dateInput = request.getParameter("date");
+	            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	            Date userDate = null;
+
+
+	            int mileage = 0; // Default value if mileageString is empty or invalid
+	            if (mileageString != null && !mileageString.isEmpty()) {
+	                try {
+	                	userDate = dateFormat.parse(dateInput);
+	                    mileage = Integer.parseInt(mileageString);
+	                } catch (NumberFormatException e) {
+	                    // Handle the case where mileageString is not a valid integer
+	                    // You can add error handling code or display an error message here
+	                    e.printStackTrace();
+	                }
+	            }
+	            
+	           // Date currentDate = new Date();
+	               java.util.Date currentDate = new java.util.Date(); // Declare and initialize currentDate
+
+	            	Time currentTime = new Time(currentDate.getTime());
+	        
+	        if (conn != null) {
+	        	sqlQuery = "INSERT INTO vehicle_service (date, time,vehicle_no, mileage, location, message, username) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	            stmt = conn.prepareStatement(sqlQuery);
+	            stmt.setDate(1, new java.sql.Date(userDate.getTime())); // User-provided date
+	            stmt.setTime(2, currentTime); // Current time
+	            stmt.setString(3, vehicleNo);
+	            stmt.setInt(4, mileage);
+	            stmt.setString(5, location);
+	            stmt.setString(6, message);
+	            stmt.setString(7, username); // Replace with the actual username
+
+	            int rowsAffected = stmt.executeUpdate();
+
+	            if (rowsAffected > 0) {
+	            	request.getSession().setAttribute("formSubmitted", true);
+	            	%>
+	            	<script>
+	        			alert("added");
+	        		</script>
+	        		<% 
+
+	            } else {
+	            	%>
+	            	<script>
+	        			alert("failed");
+	        		</script>
+	        		<% 
+	            }
+	         
+	            String bookingIdToDelete = request.getParameter("booking_id");
+	            String deleteQuery = "DELETE FROM vehicle_service WHERE booking_id=?";
+	            PreparedStatement deleteStmt = conn.prepareStatement(deleteQuery);
+	            deleteStmt.setInt(1, Integer.parseInt(bookingIdToDelete));
+	            int rowsDeleted = deleteStmt.executeUpdate();
+
+
+	            if (rowsDeleted > 0) {
+	                // Reservation deleted successfully
+	                // You can redirect the user to a confirmation page or display a success message
+	                out.println("Reservation deleted successfully");
+	            } else {
+	                // Handle the case where the reservation was not deleted
+	                out.println("Failed to delete reservation: No rows were affected.");
+	            }
+	    
+		}
+	        
+	        }
+	      
+	        
+	        
+		}catch (ClassNotFoundException | SQLException e) {
+		    e.printStackTrace();
+		} 
+		
+%>
     
     
 <%
@@ -138,14 +241,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js		"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
-<title>Home</title>
-<link rel="stylesheet" type="text/css" href="../Styles/home.css">
-
-    
-
+	<title>Home</title>
+	<link rel="stylesheet" type="text/css" href="../Styles/home.css">
+	<link rel="stylesheet" type="text/css" href="../Styles/nav.css">
 </head>
-
 <body>
+
+<nav class="navbar">
+  <div class="">
+
+    <div class="navbar-header">
+      <button class="navbar-toggler" data-toggle="open-navbar1">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="#">
+        <div class="main-container">
+	<img alt="" src="../Images/logo.png">
+		</a>
+	</div>
+	</div>
+ 
+    </div>
+
+    <div class="navbar-menu" id="open-navbar1">
+      <ul class="navbar-nav">
+        <li class="active"><a href="#">Home</a></li>      
+        <li><a href="#profile">Profile</a></li>
+        <li><a href="#service">Service</a></li>
+        <li><a href="#list">Info</a></li>
+        <li><a href="#contact">Contact</a></li>
+       <li><a href="#">Log out</a></li>
+        
+      </ul>
+    </div>
+  </div>
+  </nav>
+
 <div class="wrapper-menu">
 <div class="menu-list">
 <ul class="menu">
@@ -174,9 +307,7 @@
 
 </div>
 <section class="sec" id="text">
-<div class="main-container">
-	<img alt="" src="../Images/logo.png">
-</div>
+
     <div class="card">
   <input type="radio" name="select" id="slide_1" checked>
     <input type="radio" name="select" id="slide_2" checked>
@@ -250,169 +381,124 @@
     </div>
 
 </section>
-
-<section class="sec" id="list">
-	<div class="container">
-  <h2>Your Reservations </h2>
-
-  <ul class="responsive-table">
-    <li class="table-header">
-      <div class="col col-1">Booking ID</div>
-      <div class="col col-2">Date</div>
-      <div class="col col-1">Time</div>
-      <div class="col col-2">Location</div>
-      <div class="col col-1">Vehicle No</div>
-      <div class="col col-2">Mileage</div>
-      <div class="col col-2">Message</div>
-      <div class="col col-1">Action</div>
-      
-      
-     
-    </li>
-    <%
-		// Database connection variables
-		String jdbcUrl = "jdbc:mysql://51.132.137.223:3306/isec_assessment2";
-		String dbUsername = "isec";
-		String dbPassword = "EUHHaYAmtzbv";
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		// SQL query to retrieve data from the vehicle_service table
-
-
-	try {
-    Class.forName("com.mysql.cj.jdbc.Driver");
-    conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
-    
-    if (conn != null) {
-        String sqlQuery = "SELECT * FROM vehicle_service WHERE username=? AND date > CURDATE()";
-        stmt = conn.prepareStatement(sqlQuery);
-        stmt.setString(1,"hello@gmail.com "); 
-        
-        rs = stmt.executeQuery();
-        
-		System.out.println(rs);
-       
-        while (rs.next()) {
-
-            int bookingId = rs.getInt("booking_id");
-            Date date = rs.getDate("date");
-            Time time = rs.getTime("time");
-            String location = rs.getString("location");
-            String vehicleNo = rs.getString("vehicle_no");
-            int mileage = rs.getInt("mileage");
-            String message = rs.getString("message");
-            
-            
-    		
-
-            
-                        
-          %>
-          <li class="table-row">
-      		<div class="col col-1" data-label="BookinID" ><%= bookingId %></div>
-      		<div class="col col-2" data-label="Date"><%= date %></div>
-      		<div class="col col-1" data-label="Time"><%= time %></div>
-      		<div class="col col-2" data-label="Location"><%= location  %></div>
-            <div class="col col-1" data-label="Vehicle_no"><%= vehicleNo %></div>
-            <div class="col col-2" data-label="Mileage"><%= mileage %></div>
-            <div class="col col-2" data-label="Message"><%= message %></div>  
-            <div class="col col-1" data-label="Message"><span class="front fas fa-trash"></span></div>
-         </li>
-    <% 
-   
-        }
-    }
-	}catch (ClassNotFoundException | SQLException e) {
-	    e.printStackTrace();
-	} 
-	
-
-
-%>    
-    
-    
-    
- </ul>
+<section class="" id="profile">
+	<div class="card-container">	
+	<img class="round" src="https://randomuser.me/api/portraits/women/79.jpg" alt="user" />
+	<h3>@<span id="given_Name"></span></h3>
+	<h6>Username: <span id="username"></span></h6>
+	<p> Email: <span id = "email"></span><br/> Phone: <span id = "phone"></span> <br/><span id = "country"></span></p>	
 </div>
+</section>
+<div class="list" id="list">
+    <div class="container table">
+        <h2>Your Reservations </h2>
+
+        <ul class="responsive-table">
+            <li class="table-header">
+                <div class="col col-1">Booking ID</div>
+                <div class="col col-2">Date</div>
+                <div class="col col-1">Time</div>
+                <div class="col col-2">Location</div>
+                <div class="col col-1">Vehicle No</div>
+                <div class="col col-2">Mileage</div>
+                <div class="col col-2">Message</div>
+                <div class="col col-1">Action</div>
+            </li>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const deleteButtons = document.querySelectorAll(".deleteButton");
+
+                    deleteButtons.forEach(button => {
+                        button.addEventListener("click", function () {
+                            const bookingIdToDelete = this.getAttribute("data-booking-id");
+
+                            // Confirm with the user before deleting
+                            if (confirm("Are you sure you want to delete this reservation?")) {
+                                // Send an AJAX request to delete_reservation.jsp
+                                const xhr = new XMLHttpRequest();
+                                xhr.open("POST", "", true);
+                                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                xhr.onreadystatechange = function () {
+                                    if (xhr.readyState === 4) {
+                                        if (xhr.status === 200) {
+                                            // Reservation deleted successfully
+                                            // You can update the UI as needed, e.g., remove the deleted reservation from the list
+                                            // You can also display a success message
+
+                                            alert("Reservation deleted successfully");
+                                            location.reload(); // Reload the page or update the list dynamically
+                                        } else {
+                                            // Handle the case where the reservation was not deleted
+                                            alert("Failed to delete reservation");
+                                        }
+                                    }
+                                };
+                                xhr.send(`booking_id=${bookingIdToDelete}`);
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <%
+                if (conn != null) {
+                    java.util.Date currentDate = new java.util.Date(); // Get the current date
+
+                    while (rs.next()) {
+                        int bookingId = rs.getInt("booking_id");
+                        Date date = rs.getDate("date");
+                        Time time = rs.getTime("time");
+                        String location = rs.getString("location");
+                        String vehicleNo = rs.getString("vehicle_no");
+                        int mileage = rs.getInt("mileage");
+                        String message = rs.getString("message");
+
+                        // Compare the reservation date with the current date
+                        if (date.after(currentDate)) {
+                            // Reservation is after the current date, show the delete button
+            %>
+                            <li class="table-row">
+                                <div class="col col-1" data-label="BookinID"><%= bookingId %></div>
+                                <div class="col col-2" data-label="Date"><%= date %></div>
+                                <div class="col col-1" data-label="Time"><%= time %></div>
+                                <div class="col col-2" data-label="Location"><%= location  %></div>
+                                <div class="col col-1" data-label="Vehicle_no"><%= vehicleNo %></div>
+                                <div class="col col-2" data-label="Mileage"><%= mileage %></div>
+                                <div class="col col-2" data-label="Message"><%= message %></div>
+                                <div class="col col-1" data-label="Action">
+                                    <button class="deleteButton" data-booking-id="<%= bookingId %>">
+                                        <span class="front fas fa-trash"></span>
+                                    </button>
+                                </div>
+                            </li>
+            <%
+                        } else {
+                            // Reservation is on or before the current date, show the "eye" icon
+            %>
+                            <li class="table-row">
+                                <div class="col col-1" data-label="BookinID"><%= bookingId %></div>
+                                <div class="col col-2" data-label="Date"><%= date %></div>
+                                <div class="col col-1" data-label="Time"><%= time %></div>
+                                <div class="col col-2" data-label="Location"><%= location  %></div>
+                                <div class="col col-1" data-label="Vehicle_no"><%= vehicleNo %></div>
+                                <div class="col col-2" data-label="Mileage"><%= mileage %></div>
+                                <div class="col col-2" data-label="Message"><%= message %></div>
+                                <div class="col col-1" data-label="Action">
+                                    <span class="front fas fa-eye"></span>
+                                </div>
+                            </li>
+            <%
+                        }
+                    }
+                }
+            %>
+        </ul>
+    </div>
 </section>
 
 
 <section class="sec" id="service">
-<%
 
-
-if (request.getParameter("submit") != null) {
-  
-    String vehicleNo = request.getParameter("vehicleNo");
-    String mileageString = request.getParameter("mileage");
-    String location = request.getParameter("location");
-    String message = request.getParameter("message");
-    String username = request.getParameter("nameField");
-    
-    String dateInput = request.getParameter("date");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    Date userDate = null;
-
-
-    int mileage = 0; // Default value if mileageString is empty or invalid
-    if (mileageString != null && !mileageString.isEmpty()) {
-        try {
-        	userDate = dateFormat.parse(dateInput);
-            mileage = Integer.parseInt(mileageString);
-        } catch (NumberFormatException e) {
-            // Handle the case where mileageString is not a valid integer
-            // You can add error handling code or display an error message here
-            e.printStackTrace();
-        }
-    }
-    
-   // Date currentDate = new Date();
-       java.util.Date currentDate = new java.util.Date(); // Declare and initialize currentDate
-
-    Time currentTime = new Time(currentDate.getTime());
-
-    try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
-
-        if (conn != null) {
-            String sqlQuery = "INSERT INTO vehicle_service (date, time,vehicle_no, mileage, location, message, username) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sqlQuery);
-            stmt.setDate(1, new java.sql.Date(userDate.getTime())); // User-provided date
-            stmt.setTime(2, currentTime); // Current time
-            stmt.setString(3, vehicleNo);
-            stmt.setInt(4, mileage);
-            stmt.setString(5, location);
-            stmt.setString(6, message);
-            stmt.setString(7, username); // Replace with the actual username
-
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-            
-            	%>
-            	<script>
-        			alert("added");
-        		</script>
-        		<% 
-
-            } else {
-            	%>
-            	<script>
-        			alert("failed");
-        		</script>
-        		<% 
-            }
-        }
-        conn.close();
-        stmt.close();
-        
-    } catch (Exception e) {
-        e.printStackTrace();
-    } 
-}
-%>
 	<div class="register">
     <div class="row">
      
@@ -447,7 +533,7 @@ if (request.getParameter("submit") != null) {
                             </div>
                             <input type="hidden" id="nameField" name="nameField" value="">
                             
-                            <button class="btnRegister"  id="submit" name="submit">ADD</button>
+                            <button class="btnRegister"  id="submit" name="submit" >ADD</button>
                         </div>
                     </div>
                     </form>
@@ -461,17 +547,7 @@ if (request.getParameter("submit") != null) {
 
 </section>
 
-<section class="sec" id="profile">
-	<div class="card-container">
-	
-	<img class="round" src="https://randomuser.me/api/portraits/women/79.jpg" alt="user" />
-	<h3>@<span id="given_Name"></span></h3>
-	<h6><span id="username"></span></h6>
-	<p> <span id = "email"></span><br/> <span id = "phone"></span> <br/><span id = "country"></span></p>
-	
-	
-</div>
-</section>
+
 <section class="sec" id="contact">
 	   
 </section>
