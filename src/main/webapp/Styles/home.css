@@ -356,6 +356,11 @@ button.primary.ghost {
 	border:none;
 }
 
+.deleteButton:focus{
+	border:none;
+	outline: none;
+}
+
 .deleteButton .fa-trash{
 	color:#f40b57;
 }
