@@ -6,16 +6,28 @@
 <%@ page import="java.io.OutputStream" %>
 <%@ page import="java.net.URLEncoder" %>
 <%@ page import="org.json.JSONObject" %>
+<%@ page import="java.io.InputStream, java.io.IOException" %>
+<%@ page import="java.util.Properties" %>
 
 <%
     String code = request.getParameter("code");
     String sessionState = request.getParameter("session_state");
-
+  //Initialize a Properties object
+  		Properties properties = new Properties();
+  		//Load the properties file
+  		try {
+  			 InputStream inputStream = application.getResourceAsStream("/WEB-INF/classes/application.properties");
+  			 properties.load(inputStream);
+  			} catch (IOException e) {
+  			    e.printStackTrace();
+  			}
+  		
     // Define the URL
-    String url = "https://api.asgardeo.io/t/projectwheelxgo/oauth2/token";
-    String client_Id = "Sgw02f5sSRq273fxmMfySrPILAQa";
-    String client_secret = "5_SyIF9cgymlNtY5o7Q6eIrfJPXwQctC0b2sfkQDDOoa";
-    String redirect_url = "http://localhost:8080/VehicleServiceSystem/auth.jsp";
+    
+    String url = properties.getProperty("tokenEndpoint");
+    String client_Id = properties.getProperty("client_id");
+    String client_secret = properties.getProperty("client_secret");
+    String redirect_url = properties.getProperty("baseurl")+"/VehicleServiceSystem/auth.jsp";
 
     // Define the request body parameters
     String postData = "code=" + URLEncoder.encode(code, "UTF-8");
