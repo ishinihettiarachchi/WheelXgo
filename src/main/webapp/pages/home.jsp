@@ -4,7 +4,6 @@
 <%@ page import="java.io.InputStreamReader" %>
 <%@ page import="java.net.HttpURLConnection" %>
 <%@ page import="java.net.URL" %>
-<%@ page import="java.io.IOException" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="java.sql.*, java.util.Date" %>
 <%@ page import="java.util.List" %>
@@ -14,6 +13,11 @@
 <%@ page import="com.service.*" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="com.service.dao.*" %>
+<%@ page import="java.io.InputStream, java.io.IOException" %>
+<%@ page import="java.util.Properties" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+
+
 
 
 <%
@@ -31,10 +35,20 @@
 %>
      
 <%
+		//Initialize a Properties object
+		Properties properties = new Properties();
+		//Load the properties file
+		try {
+			 InputStream inputStream = application.getResourceAsStream("/WEB-INF/classes/application.properties");
+			 properties.load(inputStream);
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+		
 
-		String introUrl = "https://api.asgardeo.io/t/projectwheelxgo/oauth2/introspect";
-		String post_logout_redirect_uri = "http://localhost:8080/VehicleServiceSystem/index.jsp"; 
-		String client_id = "Sgw02f5sSRq273fxmMfySrPILAQa";
+		String introUrl = properties.getProperty("introspectionEndpoint");
+		String post_logout_redirect_uri = properties.getProperty("baseurl")+"/VehicleServiceSystem/index.jsp"; 
+		String client_id =  properties.getProperty("client_id");
 
         // Retrieve access_token and id_token from session attribute
         String access_token = (String) request.getSession().getAttribute("access_token");
@@ -48,7 +62,7 @@
 
         // Check if the tokens exist in the session
          if (access_token != null && id_token != null) {
-        	    String infoUrl = "https://api.asgardeo.io/t/projectwheelxgo/oauth2/userinfo";
+        	    String infoUrl = properties.getProperty("userinfoEndpoint");
 
         try {
             // Create a URL object
@@ -182,7 +196,7 @@
         <li class="active"><a href="#">Home</a></li>      
         <li><a href="#service">Service</a></li>
         <li><a href="#list">Info</a></li>
-       <li><form id="logout-form" action="https://api.asgardeo.io/t/orgqfac7/oidc/logout" method="POST">
+       <li><form id="logout-form" action= "<%= properties.getProperty("logoutEndpoint") %>" method="POST">
 				    <input type="hidden" id="client-id" name="client_id" value="<%= client_id %>">
 				    <input type="hidden" id="post-logout-redirect-uri" name="post_logout_redirect_uri" value="<%= post_logout_redirect_uri %>">
 				    <input type="hidden" id="state" name="state" value="<%= sessionState %>">
@@ -316,17 +330,18 @@
                             // Reservation is after the current date, show the delete button
             %>
                             <li class="table-row">
-                                <div class="col col-1" data-label="BookinID"><%= bookingId %></div>
-                                <div class="col col-2" data-label="Date"><%= date %></div>
-                                <div class="col col-1" data-label="Time"><%= time %></div>
-                                <div class="col col-2" data-label="Location"><%= location  %></div>
-                                <div class="col col-1" data-label="Vehicle_no"><%= vehicleNo %></div>
-                                <div class="col col-2" data-label="Mileage"><%= mileage %></div>
-                                <div class="col col-2" data-label="Message"><%= message %></div>
+                                <div class="col col-1" data-label="Booking ID"><%= Encode.forHtml(String.valueOf(bookingId)) %></div>
+								<div class="col col-2" data-label="Date"><%= Encode.forHtml(date.toString()) %></div>
+								<div class="col col-1" data-label="Time"><%= Encode.forHtml(time.toString()) %></div>
+								<div class="col col-2" data-label="Location"><%= Encode.forHtml(location) %></div>
+								<div class="col col-1" data-label="Vehicle No"><%= Encode.forHtml(vehicleNo) %></div>
+								<div class="col col-2" data-label="Mileage"><%= Encode.forHtml(String.valueOf(mileage)) %></div>
+								<div class="col col-2" data-label="Message"><%= Encode.forHtml(message) %></div>
+
                                 <div class="col col-1" data-label="Action">
                                 <form id="deleteForm" action="" method="POST">
 								    <input type="hidden" name="deleteBookingId" id="bookingID" value="">
-								    <button type="button" class="deleteButton" onclick="setBookingId(<%= bookingId %>);" name="deleteButton" title="Delete Reservation">
+								    <button type="button" class="deleteButton" onclick="setBookingId(<%= Encode.forHtml(String.valueOf(bookingId)) %>);" name="deleteButton" title="Delete Reservation">
 								        <span class="front fas fa-trash"></span>
 								    </button>
 								</form>
@@ -362,13 +377,13 @@
                             // Reservation is on or before the current date, show the "eye" icon
             %>
                             <li class="table-row">
-                                <div class="col col-1" data-label="BookinID"><%= bookingId %></div>
-                                <div class="col col-2" data-label="Date"><%= date %></div>
-                                <div class="col col-1" data-label="Time"><%= time %></div>
-                                <div class="col col-2" data-label="Location"><%= location  %></div>
-                                <div class="col col-1" data-label="Vehicle_no"><%= vehicleNo %></div>
-                                <div class="col col-2" data-label="Mileage"><%= mileage %></div>
-                                <div class="col col-2" data-label="Message"><%= message %></div>
+                                <div class="col col-1" data-label="Booking ID"><%= Encode.forHtml(String.valueOf(bookingId)) %></div>
+								<div class="col col-2" data-label="Date"><%= Encode.forHtml(date.toString()) %></div>
+								<div class="col col-1" data-label="Time"><%= Encode.forHtml(time.toString()) %></div>
+								<div class="col col-2" data-label="Location"><%= Encode.forHtml(location) %></div>
+								<div class="col col-1" data-label="Vehicle No"><%= Encode.forHtml(vehicleNo) %></div>
+								<div class="col col-2" data-label="Mileage"><%= Encode.forHtml(String.valueOf(mileage)) %></div>
+								<div class="col col-2" data-label="Message"><%= Encode.forHtml(message) %></div>
                                 <div class="col col-1" data-label="Action">
                                     <span class="front fas fa-eye" title="View Only"></span>
                                 </div>
