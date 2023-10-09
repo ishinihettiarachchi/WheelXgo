@@ -1,4 +1,5 @@
 package com.service.dao;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,14 +9,17 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.owasp.encoder.Encode;
 
 public class VehicleService {
     private String jdbcUrl = "jdbc:mysql://51.132.137.223:3306/isec_assessment2";
     private String dbUsername = "isec";
     private String dbPassword = "EUHHaYAmtzbv";
-    
+
     public ResultSet selectData(String username) {
         Connection conn = null;
         PreparedStatement selectStmt = null;
@@ -40,7 +44,7 @@ public class VehicleService {
 
         return rs;
     }
-    
+
     public void insertData(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Connection conn = null;
         PreparedStatement insertStmt = null;
@@ -50,13 +54,13 @@ public class VehicleService {
             conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
 
             if (conn != null) {
-            	String vehicleNo = request.getParameter("vehicleNo");
-                String mileageString = request.getParameter("mileage");
-                String location = request.getParameter("location");
-                String message = request.getParameter("message");
-                String username = request.getParameter("nameField");
-                String timeString = request.getParameter("time");
-                String dateInput = request.getParameter("date");
+                String vehicleNo = Encode.forHtml(request.getParameter("vehicleNo"));
+                String mileageString = Encode.forHtml(request.getParameter("mileage"));
+                String location = Encode.forHtml(request.getParameter("location"));
+                String message = Encode.forHtml(request.getParameter("message"));
+                String username = Encode.forHtml(request.getParameter("nameField"));
+                String timeString = Encode.forHtml(request.getParameter("time"));
+                String dateInput = Encode.forHtml(request.getParameter("date"));
 
                 java.util.Date userDate = null;
                 Time time = null;
@@ -77,11 +81,11 @@ public class VehicleService {
                 if (mileageString != null && !mileageString.isEmpty()) {
                     try {
                         try {
-							userDate = dateFormat.parse(dateInput);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+                            userDate = dateFormat.parse(dateInput);
+                        } catch (ParseException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
                         mileage = Integer.parseInt(mileageString);
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
@@ -116,48 +120,46 @@ public class VehicleService {
     }
 
     public void deleteData(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	   Connection conn = null;
-    	   PreparedStatement deleteStmt = null;
+        Connection conn = null;
+        PreparedStatement deleteStmt = null;
 
-    	   try {
-    	       Class.forName("com.mysql.cj.jdbc.Driver");
-    	       conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
 
-    	       if (conn != null) {
-    	           String deleteBookingId = request.getParameter("deleteBookingId");
+            if (conn != null) {
+                String deleteBookingId = Encode.forHtml(request.getParameter("deleteBookingId"));
 
-    	           if (deleteBookingId != null && !deleteBookingId.isEmpty()) {
-    	               int bookingIdToDelete = Integer.parseInt(deleteBookingId);
-    	                System.out.println("Deleting bookingId: " + bookingIdToDelete);
+                if (deleteBookingId != null && !deleteBookingId.isEmpty()) {
+                    int bookingIdToDelete = Integer.parseInt(deleteBookingId);
+                    System.out.println("Deleting bookingId: " + bookingIdToDelete);
 
-    	               // DELETE query
-    	               String deleteQuery = "DELETE FROM vehicle_service WHERE booking_id=?";
-    	               deleteStmt = conn.prepareStatement(deleteQuery);
-    	               deleteStmt.setInt(1, bookingIdToDelete);
+                    // DELETE query
+                    String deleteQuery = "DELETE FROM vehicle_service WHERE booking_id=?";
+                    deleteStmt = conn.prepareStatement(deleteQuery);
+                    deleteStmt.setInt(1, bookingIdToDelete);
 
-    	               int rowsDeleted = deleteStmt.executeUpdate();
+                    int rowsDeleted = deleteStmt.executeUpdate();
 
-    	               if (rowsDeleted > 0) {
-    	                   // Set a flag in session to indicate successful deletion
-    	                   request.getSession().setAttribute("deleteSuccess", true);
+                    if (rowsDeleted > 0) {
+                        // Set a flag in session to indicate successful deletion
+                        request.getSession().setAttribute("deleteSuccess", true);
 
-    	                   // Redirect to the same page to avoid resubmission
-    	                   response.sendRedirect(request.getRequestURI());
-    	               } else {
-    	                   // Handle deletion failure
-    	                   // You can set an attribute or flag to show an error message in your JSP
-    	                   request.getSession().setAttribute("deleteFailed", true);
-    	                   response.sendRedirect(request.getRequestURI());
-    	               }
-    	           }
-    	       }
-    	   } catch (ClassNotFoundException | SQLException e) {
-    	       e.printStackTrace();
-    	       // Handle exceptions here
-    	   } finally {
-    	       // Close resources (Connection, Statements, ResultSet) here
-    	   }
-    	   
+                        // Redirect to the same page to avoid resubmission
+                        response.sendRedirect(request.getRequestURI());
+                    } else {
+                        // Handle deletion failure
+                        // You can set an attribute or flag to show an error message in your JSP
+                        request.getSession().setAttribute("deleteFailed", true);
+                        response.sendRedirect(request.getRequestURI());
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions here
+        } finally {
+            // Close resources (Connection, Statements, ResultSet) here
+        }
     }
-
 }
