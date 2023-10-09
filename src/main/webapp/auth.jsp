@@ -15,14 +15,14 @@
     String url = "https://api.asgardeo.io/t/projectwheelxgo/oauth2/token";
     String client_Id = "Sgw02f5sSRq273fxmMfySrPILAQa";
     String client_secret = "5_SyIF9cgymlNtY5o7Q6eIrfJPXwQctC0b2sfkQDDOoa";
-    String redirect_uri = "http://localhost:8080/VehicleServiceSystem/auth.jsp";
+    String redirect_url = "http://localhost:8080/VehicleServiceSystem/auth.jsp";
 
     // Define the request body parameters
     String postData = "code=" + URLEncoder.encode(code, "UTF-8");
     postData += "&grant_type=authorization_code";
     postData += "&client_id=" + URLEncoder.encode(client_Id, "UTF-8");
     postData += "&client_secret=" + URLEncoder.encode(client_secret, "UTF-8");
-    postData += "&redirect_uri=" + URLEncoder.encode(redirect_uri, "UTF-8");
+    postData += "&redirect_uri=" + URLEncoder.encode(redirect_url, "UTF-8");
 
     // Create a URL object and open a connection
     URL obj = new URL(url);
@@ -78,12 +78,4 @@
         response.sendRedirect("../index.jsp");
     }
 %>
-<!DOCTYPE html>
-<html>
-<head>
-    <!-- You can include any necessary HTML content here -->
-</head>
-<body>
-    <!-- You can include any necessary HTML content here -->
-</body>
-</html>
+
