@@ -6,15 +6,28 @@
 }
 
 
+.row1-container {
+	
+	background-color:rgb(242, 145, 10);
+  display: flex; /* Use flexbox to arrange divs side by side */
+  justify-content: space-between; /* Space items evenly along the horizontal axis */
+}
+
+.sec {
+  flex: 1; /* Let it grow to take available space */
+  
+}
+
+
 
 .card{
-height: 350px;
-width: 100%;
-max-width: 850px;
-margin:5% 22%;
-background-color: #ffffff;
-border-radius: 25px;
-box-shadow: 0px 10px 50px rgba(0,0,0,.3);
+	height: 350px;
+	width: 100%;
+	max-width: 700px;
+	margin:10% 20%;
+	background-color: #ffffff;
+	border-radius: 25px;
+	box-shadow: 0px 10px 50px rgba(0,0,0,.3);
 }
 
 .card .inner_part{display: flex;
@@ -29,7 +42,7 @@ transition: .1s ease-in;
 }
 
 .inner_part .img{height: 260px;
-width: 260px;
+width: 35%;
 overflow: hidden;
 flex-shrink: 0;
 border-radius: 20px;
@@ -38,7 +51,7 @@ box-shadow: 0 10px 50px rgba(0,0,0,.2);
 
 
 #slideImg:checked ~ .inner_part .img{height: 350px;
-width: 850px;
+width: 500px;
 z-index: 99;
 transition: .3s .2s ease-in;
 }
@@ -50,6 +63,8 @@ cursor: pointer;
 opacity: 0;
 transition: .6s;
 }
+
+
 
 #slide_1:checked ~ .inner_part .img_1 , #slide_2:checked ~ .inner_part .img_2 ,
 #slide_3:checked ~ .inner_part .img_3{
@@ -79,7 +94,7 @@ font-weight:600;
 text-transform:uppercase;}
 
 .content .text{font-size: 19px;
-color:#4e4ac7;
+color:#6d7184;
 margin:0 auto 30px auto;
 line-height: 1.5em;
 text-align: justify;
@@ -87,18 +102,16 @@ font-family:'Roboto', sans-serif;
 }
 
 
-.content button{padding: 15px 20px;
+.content button{padding: 10px 20px;
 border: none;
-font-size: 16px;
+font-size: 14px;
 color: #fff0e6;
-font-weight:600;
-letter-spacing: 1px;
-border-radius: 50px;
+border-radius: 30px;
 cursor: pointer;
 outline: none;
 background-color: #000000;
 box-shadow: 0px 10px 50px rgba(0,0,0,0.2);
-float: right;
+width:100px;
 }
 
 
@@ -147,7 +160,6 @@ input{display: none;
 
 .content button:hover{background-color: #cecece;
 color: #000000;}
-
 
 
 
@@ -213,16 +225,15 @@ li.menu_list:hover .front {
     justify-content: center;
 }
 
-.main-container img{
+.navbar-header img{
 	width:50%;
 }
-
-
 
 .table{
 	background-color:rgb(225,230,230);
 	padding:10px;
 	border-radius:5px;
+	margin-top:10%;
 }
 
 .responsive-table li {
@@ -291,23 +302,16 @@ p {
 	line-height: 21px;
 }
 
-#profile{
-	padding-top:10px 0;
-	background-image: linear-gradient(white, grey,white);
-	
-}
 
 .card-container {
-	background-color: black;
-	border-radius: 5px;
-	box-shadow: 0px 10px 20px -10px rgba(0,0,0,0.75);
-	color: #B3B8CD;
-	padding: 30px;
-	position:relative;
-	width: 50%;
-	max-width: 100%;
+	background-color:transparent;
+	border-left:1px solid grey;
+	color: black;
+	padding:30px 40px;
+	width: 30%;
+	margin:6% 30px;
 	text-align: center;
-	margin:20% 25%;
+	
 }
 
 
@@ -315,17 +319,11 @@ p {
 	border: 1px solid rgb(242, 145, 10);
 	border-radius: 50%;
 	padding: 7px;
+	width:50%;
+	
 }
 
-button.primary {
-	
-	border: 1px solid rgb(242, 145, 10);
-	border-radius: 3px;
-	color: rgb(242, 145, 10);
-	font-family: Montserrat, sans-serif;
-	font-weight: 500;
-	padding: 10px 25px;
-}
+
 
 button.primary.ghost {
 	background-color: transparent;
@@ -339,7 +337,7 @@ button.primary.ghost {
     background-size: cover;
     width: 100%;
     height: 100vh;
-    margin-top: 10%;
+    margin-top: 10% ;
     padding: 3%;
 }
 
@@ -409,7 +407,7 @@ button.primary.ghost {
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #0062cc;
+    background: grey;
     color: #fff;
     font-weight: 600;
     width: 50%;
@@ -454,7 +452,15 @@ button.primary.ghost {
 }
 
 
+input[type = "number"]{
+	-moz-appearance: textfield;
+}
 
+input[type = "number"]::-webkit-outer-spin-button,
+input[type = "number"]::-webkit-inner-spin-button{
+	-webkit-appearance:none;
+	
+}
 
 footer {
     background-color: #222;

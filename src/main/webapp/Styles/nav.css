@@ -151,7 +151,7 @@ a {
   padding: 0.5rem 1rem;
 }
 .navbar .navbar-menu .navbar-nav > li > a:hover {
-  color: #66f;
+  color: #6d7184;
 }
 @media (max-width: 768px) {
   .navbar .navbar-menu .navbar-nav > li > a {
@@ -159,7 +159,7 @@ a {
   }
 }
 .navbar .navbar-menu .navbar-nav > li.active a {
-  color: #66f;
+  color: #6d7184;
 }
 .navbar .navbar-menu .navbar-nav .navbar-dropdown .dropdown {
   list-style: none;
@@ -210,6 +210,15 @@ a {
   font-weight: 500;
   font-size: 1.25rem;
 }
+
+#logout-btn{
+	border:none;
+	padding:10px;
+	border-radius:10px;
+	background-color:grey;
+	color:white;
+}
+
 @media (max-width: 768px) {
   .navbar .navbar-header h4 {
     font-size: 1.05rem;
